@@ -1,4 +1,4 @@
-package com.devpedrod.apiuserregister.dao.exceptions;
+package com.devpedrod.apiuserregister.exceptions;
 
 public class ObjectNotFoundException extends RuntimeException{
 

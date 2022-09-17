@@ -1,7 +1,7 @@
 package com.devpedrod.apiuserregister.dao.impl;
 
 import com.devpedrod.apiuserregister.dao.IGenericDAO;
-import com.devpedrod.apiuserregister.dao.exceptions.ObjectNotFoundException;
+import com.devpedrod.apiuserregister.exceptions.ObjectNotFoundException;
 import com.devpedrod.apiuserregister.domain.DomainEntity;
 import com.devpedrod.apiuserregister.repositories.GenericRepository;
 import org.springframework.beans.factory.annotation.Autowired;
