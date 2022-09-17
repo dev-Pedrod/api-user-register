@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @SuperBuilder
 public class ValidationError extends Response {
+
     private final List<FieldMessage> errors = new ArrayList<>();
 
     public ValidationError(LocalDateTime timeStamp, HttpStatus status, int statusCode,String message, String path) {
