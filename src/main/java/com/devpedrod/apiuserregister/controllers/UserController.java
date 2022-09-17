@@ -1,12 +1,10 @@
 package com.devpedrod.apiuserregister.controllers;
 
-import com.devpedrod.apiuserregister.dao.impl.GenericDAO;
 import com.devpedrod.apiuserregister.dao.impl.UserDAO;
 import com.devpedrod.apiuserregister.domain.User;
-import com.devpedrod.apiuserregister.dto.UserDto;
+import com.devpedrod.apiuserregister.dto.user.UserDto;
 import com.devpedrod.apiuserregister.strategy.user.UserRules;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

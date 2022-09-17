@@ -1,5 +1,6 @@
-package com.devpedrod.apiuserregister.dto;
+package com.devpedrod.apiuserregister.dto.user;
 
+import com.devpedrod.apiuserregister.dto.DomainDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @Getter @Setter
 @NoArgsConstructor
 @JsonInclude(NON_NULL)
-public class UserDto extends DomainDto{
+public class UserDto extends DomainDto {
     private String name;
     private String cpf;
 }

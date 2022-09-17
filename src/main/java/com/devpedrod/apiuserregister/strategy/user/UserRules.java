@@ -18,7 +18,7 @@ public class UserRules implements IStrategy {
             if (!CpfValidator.isValidCPF(user.getCpf())){
                 // TODO: CPF Exception
                 System.out.println("CPF INVALIDO");
-            } else if (!NameValidator.validateName(user.getName())) {
+            } if (!NameValidator.validateName(user.getName())) {
                 // TODO: Name Exception
                 System.out.println("NOME INVALIDO");
             }
