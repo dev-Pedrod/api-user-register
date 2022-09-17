@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Where(clause = "disabled_at is null")
-public class Permissions extends DomainEntity {
+public class Permission extends DomainEntity {
     private String name;
     private String permission;
     @JsonIgnore

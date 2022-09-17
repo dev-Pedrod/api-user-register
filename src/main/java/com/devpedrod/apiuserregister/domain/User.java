@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "disabled_at is null")
 public class User extends DomainEntity {
-    private String nome;
+    private String name;
     private String cpf;
 
     @OneToMany(mappedBy = "user")
@@ -27,5 +27,5 @@ public class User extends DomainEntity {
     @OneToOne
     private Address address;
     @ManyToMany(mappedBy = "users")
-    private List<Permissions> permissions = new ArrayList<>();
+    private List<Permission> permissions = new ArrayList<>();
 }
