@@ -1,9 +1,9 @@
 package com.devpedrod.apiuserregister.controllers;
 
-import com.devpedrod.apiuserregister.dao.IUserDAO;
+import com.devpedrod.apiuserregister.domain.DomainEntity;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.dto.user.UserDto;
-import com.devpedrod.apiuserregister.strategy.user.UserRules;
+import com.devpedrod.apiuserregister.facade.Facade;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +18,16 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
+    private final String CLASS_NAME = User.class.getName();
 
     @Autowired
-    private IUserDAO userDAO;
-    @Autowired
-    private UserRules strategy;
-    @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private Facade facade;
 
     @PostMapping
     public ResponseEntity<Void> createUser(@RequestBody @Valid User user){
-        userDAO.save(user, strategy::applyBusinessRule);
+        facade.save(user);
         return ResponseEntity.created(ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -39,31 +38,33 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user){
         user.setId(id);
-        BeanUtils.copyProperties(user, userDAO.getById(id));
-        userDAO.update(user, strategy::applyBusinessRule);
+        User oldUser = (User) facade.getById(id, CLASS_NAME);
+        user.getAddress().setId(oldUser.getAddress().getId());
+        BeanUtils.copyProperties(user, oldUser);
+        facade.update(user);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable Long id){
-        userDAO.delete(id);
+        facade.delete(id, CLASS_NAME);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/disable/{id}")
     public ResponseEntity<User> disableUser(@PathVariable Long id){
-        userDAO.disable(id);
+        facade.disable(id, CLASS_NAME);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable Long id){
-        return ResponseEntity.ok(userDAO.getById(id));
+    public ResponseEntity<DomainEntity> getById(@PathVariable Long id){
+        return ResponseEntity.ok(facade.getById(id, CLASS_NAME));
     }
 
     @GetMapping
     public ResponseEntity<Page<UserDto>> getAll(Pageable pageable){
-        return ResponseEntity.ok(userDAO.getAll(pageable)
+        return ResponseEntity.ok(facade.getAll(pageable, CLASS_NAME)
                 .map(x -> modelMapper.map(x, UserDto.class)));
     }
 }

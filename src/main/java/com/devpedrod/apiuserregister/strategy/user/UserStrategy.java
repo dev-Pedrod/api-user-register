@@ -13,16 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserConstraints implements IStrategy {
+public class UserStrategy implements IStrategy {
+
     @Override
     public DomainEntity applyBusinessRule(DomainEntity domainEntity) {
         List<FieldMessage> fieldMessages = new ArrayList<>();
+
         if (domainEntity instanceof User user) {
-            user.setName(user.getName().trim());
-            user.setCpf(user.getCpf().trim().replaceAll("[.-]", ""));
             if(user.getAddress() != null){
                 user.getAddress().setUser(user);
             }
+            user.setName(user.getName().trim());
+            user.setCpf(user.getCpf().trim().replaceAll("[.-]", ""));
+
             if (!CpfValidator.isValidCPF(user.getCpf())){
                 fieldMessages.add(new FieldMessage("CPF","CPF ínvalido"));
             }
