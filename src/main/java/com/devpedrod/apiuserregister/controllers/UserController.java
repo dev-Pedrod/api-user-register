@@ -1,6 +1,6 @@
 package com.devpedrod.apiuserregister.controllers;
 
-import com.devpedrod.apiuserregister.dao.impl.UserDAO;
+import com.devpedrod.apiuserregister.dao.IUserDAO;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.dto.user.UserDto;
 import com.devpedrod.apiuserregister.strategy.user.UserRules;
@@ -20,7 +20,7 @@ import javax.validation.Valid;
 public class UserController {
 
     @Autowired
-    private UserDAO userDAO;
+    private IUserDAO userDAO;
     @Autowired
     private UserRules strategy;
     @Autowired

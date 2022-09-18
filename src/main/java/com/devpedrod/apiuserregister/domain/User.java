@@ -23,11 +23,11 @@ public class User extends DomainEntity {
     @NotNull(message = "O CPF não pode ser em nulo")
     private String cpf;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Formation> formations = new ArrayList<>();
     @Valid
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Permission> permissions = new ArrayList<>();
 }
