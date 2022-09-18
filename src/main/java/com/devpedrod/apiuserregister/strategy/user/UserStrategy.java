@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserRules implements IStrategy {
+public class UserConstraints implements IStrategy {
     @Override
     public DomainEntity applyBusinessRule(DomainEntity domainEntity) {
         List<FieldMessage> fieldMessages = new ArrayList<>();
