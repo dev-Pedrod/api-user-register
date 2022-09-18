@@ -6,10 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +18,15 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "disabled_at is null")
 public class User extends DomainEntity {
+    @NotNull(message = "O nome não pode ser nulo")
     private String name;
+    @NotNull(message = "O CPF não pode ser em nulo")
     private String cpf;
 
     @OneToMany(mappedBy = "user")
     private List<Formation> formations = new ArrayList<>();
-    @OneToOne
+    @Valid
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
     @ManyToMany(mappedBy = "users")
     private List<Permission> permissions = new ArrayList<>();

@@ -1,6 +1,6 @@
 package com.devpedrod.apiuserregister.domain;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,9 +23,8 @@ public class Address extends DomainEntity{
     @NotNull(message = "Logradouro não pode ser nulo")
     private String street;
 
-    @NotBlank(message = "Número do endereço não pode ser em branco")
     @NotNull(message = "Número do endereço não pode ser em branco")
-    private String number;
+    private Integer number;
 
     @NotBlank(message = "Cidade não pode ser em branco")
     @NotNull(message = "Cidade não pode ser nulo")
@@ -39,6 +38,7 @@ public class Address extends DomainEntity{
     @NotNull(message = "País não pode ser nulo")
     private String country;
 
+    @JsonIgnore
     @OneToOne
     private User user;
 }

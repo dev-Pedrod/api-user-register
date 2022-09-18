@@ -20,7 +20,9 @@ public class UserRules implements IStrategy {
         if (domainEntity instanceof User user) {
             user.setName(user.getName().trim());
             user.setCpf(user.getCpf().trim().replaceAll("[.-]", ""));
-
+            if(user.getAddress() != null){
+                user.getAddress().setUser(user);
+            }
             if (!CpfValidator.isValidCPF(user.getCpf())){
                 fieldMessages.add(new FieldMessage("CPF","CPF ínvalido"));
             }
@@ -30,7 +32,6 @@ public class UserRules implements IStrategy {
             if (!fieldMessages.isEmpty()){
                 throw new MethodArgumentNotValidException(fieldMessages);
             }
-
             return user;
         }
         return null;

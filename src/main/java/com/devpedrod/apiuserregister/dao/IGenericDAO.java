@@ -12,8 +12,8 @@ public interface IGenericDAO<T extends DomainEntity>{
     void delete(Long id);
     void disable(Long id);
     void disable(Long id, Function<T, ?> function);
-    T update(T object);
-    T update(T object, Function<T, ?> function);
+    void update(T object);
+    void update(T object, Function<T, ?> function);
     Page<T> getAll(Pageable pageable);
     T getById(Long id);
 }

@@ -32,7 +32,7 @@ public abstract class GenericDAO<T extends DomainEntity> implements IGenericDAO<
 
     @Override
     public void delete(Long id) {
-        genericRepository.delete(getById(id));
+        genericRepository.deleteById(id);
     }
 
     @Override
@@ -51,14 +51,16 @@ public abstract class GenericDAO<T extends DomainEntity> implements IGenericDAO<
     }
 
     @Override
-    public T update(T object) {
-        return genericRepository.saveAndFlush(object);
+    public void update(T object) {
+        object.setUpdatedAt(now());
+        genericRepository.saveAndFlush(object);
     }
 
     @Override
-    public T update(T object, Function<T, ?> function) {
+    public void update(T object, Function<T, ?> function) {
         function.apply(object);
-        return genericRepository.saveAndFlush(object);
+        object.setUpdatedAt(now());
+        genericRepository.saveAndFlush(object);
     }
 
     @Override
