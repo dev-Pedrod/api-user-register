@@ -29,7 +29,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Response> objectNotFound(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ResponseEntity<Response> validationError(MethodArgumentNotValidException e, HttpServletRequest request) {
         ValidationError validationError = ValidationError.builder()
                 .timeStamp(now())
                 .status(UNPROCESSABLE_ENTITY)
@@ -38,6 +38,19 @@ public class ControllerExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
         e.getMessages().forEach(x -> validationError.addError(x.getFieldName(), x.getMessage()));
+        return ResponseEntity.status(UNPROCESSABLE_ENTITY).body(validationError);
+    }
+
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<Response> springValidationError(org.springframework.web.bind.MethodArgumentNotValidException e, HttpServletRequest request) {
+        ValidationError validationError = ValidationError.builder()
+                .timeStamp(now())
+                .status(UNPROCESSABLE_ENTITY)
+                .statusCode(UNPROCESSABLE_ENTITY.value())
+                .message("Erro de validação")
+                .path(request.getRequestURI())
+                .build();
+        e.getFieldErrors().forEach(x -> validationError.addError(x.getField(), x.getDefaultMessage()));
         return ResponseEntity.status(UNPROCESSABLE_ENTITY).body(validationError);
     }
 }
