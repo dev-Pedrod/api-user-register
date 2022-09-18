@@ -10,10 +10,10 @@ public class AddressStrategy implements IStrategy {
     @Override
     public DomainEntity applyBusinessRule(DomainEntity domainEntity) {
         if(domainEntity instanceof Address address){
-            address.setCity(address.getCity().trim().replaceAll(" "," "));
-            address.setCountry(address.getCountry().trim().replaceAll(" "," "));
-            address.setStreet(address.getStreet().trim().replaceAll(" "," "));
-            address.setState(address.getState().trim().replaceAll(" "," "));
+            address.setCity(address.getCity().replaceAll("\\s+"," ").trim());
+            address.setCountry(address.getCountry().replaceAll("\\s+"," ").trim());
+            address.setStreet(address.getStreet().replaceAll("\\s+"," ").trim());
+            address.setState(address.getState().replaceAll("\\s+"," ").trim());
             return address;
         }
         return null;
