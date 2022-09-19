@@ -1,6 +1,5 @@
 package com.devpedrod.apiuserregister.controllers;
 
-import com.devpedrod.apiuserregister.domain.DomainEntity;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.dto.user.UserDto;
 import com.devpedrod.apiuserregister.facade.Facade;
@@ -58,8 +57,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DomainEntity> getById(@PathVariable Long id){
-        return ResponseEntity.ok(facade.getById(id, CLASS_NAME));
+    public ResponseEntity<User> getById(@PathVariable Long id){
+        return ResponseEntity.ok((User) facade.getById(id, CLASS_NAME));
     }
 
     @GetMapping
