@@ -34,8 +34,13 @@ public class Facade extends AbstractFacade implements IFacade{
     public void delete(Long id, String className) {
         super.initialize();
         Map<String, List<IStrategy>> entityMap = businessRule.get(className);
+        List<IStrategy> strategies = entityMap.get("DELETE");
 
         GenericDAO dao = daos.get(className);
+        if(strategies != null) {
+            dao.delete(id, x -> executeRules((DomainEntity) x, strategies));
+            return;
+        }
         dao.delete(id);
     }
 
@@ -47,7 +52,11 @@ public class Facade extends AbstractFacade implements IFacade{
         List<IStrategy> strategies = entityMap.get("DISABLE");
 
         GenericDAO dao = daos.get(className);
-        dao.disable(id, x -> executeRules((DomainEntity) x, strategies));
+        if(strategies != null) {
+            dao.disable(id, x -> executeRules((DomainEntity) x, strategies));
+            return;
+        }
+        dao.disable(id);
     }
 
     @Override
