@@ -8,12 +8,13 @@ import java.util.function.Function;
 
 public interface IGenericDAO<T extends DomainEntity>{
     void save(T object);
-    void save(T object, Function<T, ?> function);
+    void save(T object, Function<T, T> function);
     void delete(Long id);
+    void delete(Long id, Function<T, T> function);
     void disable(Long id);
-    void disable(Long id, Function<T, ?> function);
+    void disable(Long id, Function<T, T> function);
     void update(T object);
-    void update(T object, Function<T, ?> function);
+    void update(T object, Function<T, T> function);
     Page<T> getAll(Pageable pageable);
     T getById(Long id);
 }

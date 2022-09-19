@@ -27,15 +27,20 @@ public abstract class GenericDAO<T extends DomainEntity> implements IGenericDAO<
 
     @Override
     @Transactional
-    public void save(T object, Function<T, ?> function) {
-        function.apply(object);
-        genericRepository.save(object);
+    public void save(T object, Function<T, T> function) {
+        genericRepository.save(function.apply(object));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
         genericRepository.delete(getById(id));
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id, Function<T, T> function) {
+        genericRepository.delete(function.apply(getById(id)));
     }
 
     @Override
@@ -48,11 +53,10 @@ public abstract class GenericDAO<T extends DomainEntity> implements IGenericDAO<
 
     @Override
     @Transactional
-    public void disable(Long id, Function<T, ?> function) {
+    public void disable(Long id, Function<T, T> function) {
         T object = getById(id);
         object.setDisabledAt(now());
-        function.apply(object);
-        genericRepository.save(object);
+        genericRepository.save(function.apply(object));
     }
 
     @Override
@@ -64,7 +68,7 @@ public abstract class GenericDAO<T extends DomainEntity> implements IGenericDAO<
 
     @Override
     @Transactional
-    public void update(T object, Function<T, ?> function) {
+    public void update(T object, Function<T, T> function) {
         function.apply(object);
         object.setUpdatedAt(now());
         genericRepository.saveAndFlush(object);
