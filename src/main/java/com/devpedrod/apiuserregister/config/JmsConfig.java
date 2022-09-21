@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -25,13 +26,13 @@ public class JmsConfig {
     @Value("${amazon.secretKey}")
     private String secretKey;
 
-    @Autowired
+    @Autowired @Lazy
     private SQSConnectionFactory connectionFactory;
 
     @Bean
     public SQSConnectionFactory createConnectionFactory(){
         return SQSConnectionFactory.builder()
-                .withRegion(Region.getRegion(Regions.SA_EAST_1))
+                .withRegion(Region.getRegion(Regions.US_EAST_1))
                 .withAWSCredentialsProvider(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey,secretKey)))
                 .build();
     }
