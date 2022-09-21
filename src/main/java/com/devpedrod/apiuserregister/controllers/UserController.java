@@ -1,8 +1,10 @@
 package com.devpedrod.apiuserregister.controllers;
 
 import com.devpedrod.apiuserregister.domain.User;
+import com.devpedrod.apiuserregister.domain.enums.Status;
 import com.devpedrod.apiuserregister.dto.user.UserDto;
 import com.devpedrod.apiuserregister.facade.Facade;
+import com.devpedrod.apiuserregister.services.ISqsService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,14 @@ public class UserController {
     private ModelMapper modelMapper;
     @Autowired
     private Facade facade;
+    @Autowired
+    private ISqsService sqsService;
+
+    @PostMapping("/send/{status}")
+    public ResponseEntity<String> sendMessage(@PathVariable String status){
+        sqsService.sqsSendStatus(status);
+        return ResponseEntity.ok(status);
+    }
 
     @PostMapping
     public ResponseEntity<Void> createUser(@RequestBody @Valid User user){
