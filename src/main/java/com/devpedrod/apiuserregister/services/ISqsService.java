@@ -1,8 +1,9 @@
 package com.devpedrod.apiuserregister.services;
 
-import com.devpedrod.apiuserregister.domain.enums.Status;
+import com.devpedrod.apiuserregister.dto.UpdateStatusDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface ISqsService {
-    void  sqsListener(String status);
-    void sqsSendStatus(String status);
+    void updateStatusListener(String status) throws JsonProcessingException;
+    void sqsSendStatus(UpdateStatusDto status);
 }

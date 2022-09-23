@@ -7,12 +7,11 @@ import javax.validation.constraints.NotNull;
 
 @Getter @Setter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
 public class UpdateStatusDto {
-    @NotNull(message = "Status não pode ser nulo")
+    @NotNull(message = "Status não pode ser nulo.")
     private Status status;
-    @NotNull(message = "Id do usuário não pode ser nulo")
+    @NotNull(message = "Id do usuário não pode ser nulo.")
     private Long userId;
 
     public String toJson(){
