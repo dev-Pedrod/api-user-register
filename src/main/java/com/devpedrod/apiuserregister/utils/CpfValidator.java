@@ -1,5 +1,6 @@
 package com.devpedrod.apiuserregister.utils;
 
+//Fonte: https://gist.github.com/adrianoluis/5043397d378ae506d87366abb0ab4e30
 public class CpfValidator {
     // CPF
     private static final int[] weightSsn = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };

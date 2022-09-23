@@ -4,9 +4,11 @@ import com.devpedrod.apiuserregister.domain.DomainEntity;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.dto.response.FieldMessage;
 import com.devpedrod.apiuserregister.exceptions.MethodArgumentNotValidException;
+import com.devpedrod.apiuserregister.repositories.UserRepository;
 import com.devpedrod.apiuserregister.strategy.IStrategy;
 import com.devpedrod.apiuserregister.utils.CpfValidator;
 import com.devpedrod.apiuserregister.utils.NameValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +16,9 @@ import java.util.List;
 
 @Service
 public class UserStrategy implements IStrategy {
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public DomainEntity applyBusinessRule(DomainEntity domainEntity) {
@@ -31,6 +36,9 @@ public class UserStrategy implements IStrategy {
             }
             if (!NameValidator.validateName(user.getName())) {
                 fieldMessages.add(new FieldMessage("Nome","Nome ínvalido, use somente letras."));
+            }
+            if (userRepository.findByCpf(user.getCpf()).isPresent()) {
+                fieldMessages.add(new FieldMessage("CPF", "Este CPF já esta cadastrado"));
             }
             if (!fieldMessages.isEmpty()){
                 throw new MethodArgumentNotValidException(fieldMessages);

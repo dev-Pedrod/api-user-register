@@ -3,7 +3,6 @@ package com.devpedrod.apiuserregister.domain;
 import com.devpedrod.apiuserregister.domain.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
 
@@ -21,6 +20,7 @@ public class User extends DomainEntity {
     @NotNull(message = "O nome não pode ser nulo")
     private String name;
     @NotNull(message = "O CPF não pode ser em nulo")
+    @Column(unique = true)
     private String cpf;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
