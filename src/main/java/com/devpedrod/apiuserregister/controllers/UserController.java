@@ -2,6 +2,7 @@ package com.devpedrod.apiuserregister.controllers;
 
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.domain.enums.Status;
+import com.devpedrod.apiuserregister.dto.UpdateStatusDto;
 import com.devpedrod.apiuserregister.dto.user.UserDto;
 import com.devpedrod.apiuserregister.facade.Facade;
 import com.devpedrod.apiuserregister.services.ISqsService;
@@ -28,10 +29,12 @@ public class UserController {
     @Autowired
     private ISqsService sqsService;
 
-    @PostMapping("/send/{status}")
-    public ResponseEntity<String> sendMessage(@PathVariable String status){
-        sqsService.sqsSendStatus(status);
-        return ResponseEntity.ok(status);
+    @PutMapping("/update-status/")
+    public ResponseEntity<String> updateStatus(@RequestBody @Valid UpdateStatusDto updateStatusDto){
+        facade.getById(updateStatusDto.getUserId(), CLASS_NAME);
+        updateStatusDto.setStatus(Status.valueOf(updateStatusDto.getStatus().name().toUpperCase()));
+        sqsService.sqsSendStatus(updateStatusDto);
+        return ResponseEntity.ok(updateStatusDto.getStatus().name());
     }
 
     @PostMapping
