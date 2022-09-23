@@ -1,5 +1,6 @@
 package com.devpedrod.apiuserregister.domain;
 
+import com.devpedrod.apiuserregister.domain.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,6 @@ import java.util.List;
 
 @Entity(name = "tb_user")
 @Getter @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "disabled_at is null")
 public class User extends DomainEntity {
@@ -28,6 +28,13 @@ public class User extends DomainEntity {
     @Valid
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Permission> permissions = new ArrayList<>();
+
+    public User(){
+        super();
+        this.status = Status.ACTIVE;
+    }
 }
