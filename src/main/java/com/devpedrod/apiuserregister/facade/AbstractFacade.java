@@ -10,6 +10,7 @@ import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.strategy.IStrategy;
 import com.devpedrod.apiuserregister.strategy.address.AddressStrategy;
 import com.devpedrod.apiuserregister.strategy.address.DeleteAddressStrategy;
+import com.devpedrod.apiuserregister.strategy.formation.DisableFormationStrategy;
 import com.devpedrod.apiuserregister.strategy.formation.FormationStrategy;
 import com.devpedrod.apiuserregister.strategy.user.UserDisableStrategy;
 import com.devpedrod.apiuserregister.strategy.user.UserStrategy;
@@ -28,7 +29,7 @@ public abstract class AbstractFacade {
     @Autowired
     private UserStrategy userStrategy;
     @Autowired
-    private UserDisableStrategy disableStrategy;
+    private UserDisableStrategy userDisableStrategy;
 
     @Autowired
     private AddressDAO addressDAO;
@@ -41,6 +42,8 @@ public abstract class AbstractFacade {
     private FormationDAO formationDAO;
     @Autowired
     private FormationStrategy formationStrategy;
+    @Autowired
+    private DisableFormationStrategy disableFormationStrategy;
 
 
     public void initialize(){
@@ -48,7 +51,7 @@ public abstract class AbstractFacade {
         daos.put(User.class.getName(), userDAO);
 
         List<IStrategy> rulesUser = new ArrayList<>(Collections.singleton(userStrategy));
-        List<IStrategy> rulesDisableUser = new ArrayList<>(Collections.singleton(disableStrategy));
+        List<IStrategy> rulesDisableUser = new ArrayList<>(Collections.singleton(userDisableStrategy));
 
         Map<String,List<IStrategy>> mapKeyUser = new HashMap<>();
         mapKeyUser.put("SAVE", rulesUser);
@@ -72,9 +75,11 @@ public abstract class AbstractFacade {
         daos.put(Formation.class.getName(), formationDAO);
 
         List<IStrategy> rulesFormations = new ArrayList<>(Collections.singleton(formationStrategy));
+        List<IStrategy> rulesDisableFormation = new ArrayList<>(Collections.singleton(disableFormationStrategy));
 
         Map<String,List<IStrategy>> mapKeyFormation = new HashMap<>();
         mapKeyFormation.put("SAVE", rulesFormations);
+        mapKeyFormation.put("DISABLE", rulesDisableFormation);
 
         businessRule.put(Formation.class.getName(), mapKeyFormation);
 

@@ -27,7 +27,10 @@ public class Facade extends AbstractFacade implements IFacade{
         List<IStrategy> strategies = entityMap.get("SAVE");
 
         GenericDAO dao = daos.get(object.getClass().getName());
-        dao.save(object, x -> executeRules((DomainEntity) x, strategies));
+        if(strategies != null){
+            dao.save(object, x -> executeRules((DomainEntity) x, strategies));
+        }
+        dao.save(object);
     }
 
     @Override
@@ -66,7 +69,10 @@ public class Facade extends AbstractFacade implements IFacade{
         List<IStrategy> strategies = entityMap.get("SAVE");
 
         GenericDAO dao = daos.get(object.getClass().getName());
-        dao.update(object, x -> executeRules((DomainEntity) x, strategies));
+        if (strategies != null) {
+            dao.update(object, x -> executeRules((DomainEntity) x, strategies));
+        }
+        dao.update(object);
     }
 
     @Override
