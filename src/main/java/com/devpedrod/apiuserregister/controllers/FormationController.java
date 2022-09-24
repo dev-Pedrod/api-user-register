@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/formations")
@@ -42,6 +43,18 @@ public class FormationController {
         BeanUtils.copyProperties(formation, oldFormation);
         facade.update(formation);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteFormation(@PathVariable Long id){
+        facade.delete(id, CLASS_NAME);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/disable/{id}")
+    public ResponseEntity<Void> disableFormation(@PathVariable Long id){
+        facade.disable(id, CLASS_NAME);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
