@@ -1,13 +1,16 @@
 package com.devpedrod.apiuserregister.facade;
 
 import com.devpedrod.apiuserregister.dao.impl.AddressDAO;
+import com.devpedrod.apiuserregister.dao.impl.FormationDAO;
 import com.devpedrod.apiuserregister.dao.impl.GenericDAO;
 import com.devpedrod.apiuserregister.dao.impl.UserDAO;
 import com.devpedrod.apiuserregister.domain.Address;
+import com.devpedrod.apiuserregister.domain.Formation;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.strategy.IStrategy;
 import com.devpedrod.apiuserregister.strategy.address.AddressStrategy;
 import com.devpedrod.apiuserregister.strategy.address.DeleteAddressStrategy;
+import com.devpedrod.apiuserregister.strategy.formation.FormationStrategy;
 import com.devpedrod.apiuserregister.strategy.user.UserDisableStrategy;
 import com.devpedrod.apiuserregister.strategy.user.UserStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,12 @@ public abstract class AbstractFacade {
     @Autowired
     private DeleteAddressStrategy deleteAddressStrategy;
 
+    @Autowired
+    private FormationDAO formationDAO;
+    @Autowired
+    private FormationStrategy formationStrategy;
+
+
     public void initialize(){
         //----------------------- User --------------------------//
         daos.put(User.class.getName(), userDAO);
@@ -58,6 +67,17 @@ public abstract class AbstractFacade {
         mapKeyAddress.put("DELETE", rulesDeleteAddress);
 
         businessRule.put(Address.class.getName(), mapKeyAddress);
+
+        //----------------------- Formation --------------------------//
+        daos.put(Formation.class.getName(), formationDAO);
+
+        List<IStrategy> rulesFormations = new ArrayList<>(Collections.singleton(formationStrategy));
+
+        Map<String,List<IStrategy>> mapKeyFormation = new HashMap<>();
+        mapKeyFormation.put("SAVE", rulesFormations);
+
+        businessRule.put(Formation.class.getName(), mapKeyFormation);
+
     }
 
 }
