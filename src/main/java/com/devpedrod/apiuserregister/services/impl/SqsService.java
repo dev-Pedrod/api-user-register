@@ -20,7 +20,7 @@ public class SqsService implements ISqsService {
     @Autowired
     private JmsTemplate jmsTemplate;
     @Autowired
-    private IUserDAO userDAO;
+    private UserService userService;
 
     @Override
     @JmsListener(destination = "atualizar-status-usuario")
@@ -29,9 +29,7 @@ public class SqsService implements ISqsService {
         try {
             UpdateStatusDto statusDto = objectMapper.readValue(statusContent, UpdateStatusDto.class);
             log.info("status received = {}", statusDto.getStatus());
-            User user = userDAO.getById(statusDto.getUserId());
-            user.setStatus(statusDto.getStatus());
-            userDAO.save(user);
+            userService.updateStatus(statusDto.getUserId(), statusDto.getStatus());
         }catch (Exception e){
             log.error(e.getMessage());
             throw e;

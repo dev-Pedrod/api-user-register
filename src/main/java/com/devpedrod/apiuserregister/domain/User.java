@@ -30,7 +30,7 @@ public class User extends DomainEntity {
     private Address address;
     @Enumerated(EnumType.STRING)
     private Status status;
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private List<Permission> permissions = new ArrayList<>();
 
     public User(){

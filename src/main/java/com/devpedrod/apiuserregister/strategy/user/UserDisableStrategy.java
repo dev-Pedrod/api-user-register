@@ -12,11 +12,10 @@ public class UserDisableStrategy implements IStrategy {
     @Override
     public DomainEntity applyBusinessRule(DomainEntity domainEntity) {
         if (domainEntity instanceof User user) {
+            user.getPermissions().parallelStream().forEach(permission -> permission.setDisabledAt(now()));
             if(user.getAddress() != null) {
                 user.getAddress().setDisabledAt(now());
             }
-            user.getPermissions().parallelStream().forEach(permission -> permission.setDisabledAt(now()));
-            user.getFormations().parallelStream().forEach(formation-> formation.setDisabledAt(now()));
         }
         return null;
     }
