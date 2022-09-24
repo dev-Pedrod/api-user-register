@@ -34,7 +34,7 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Address> updateAddress(@PathVariable Long id, @RequestBody Address address){
+    public ResponseEntity<Void> updateAddress(@PathVariable Long id, @RequestBody @Valid Address address){
         address.setId(id);
         Address oldAdrress = (Address) facade.getById(id, CLASS_NAME);
         address.setUser(oldAdrress.getUser());
@@ -44,13 +44,13 @@ public class AddressController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Address> deleteAddress(@PathVariable Long id){
+    public ResponseEntity<Void> deleteAddress(@PathVariable Long id){
         facade.delete(id, CLASS_NAME);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/disable/{id}")
-    public ResponseEntity<Address> disableAddress(@PathVariable Long id){
+    public ResponseEntity<Void> disableAddress(@PathVariable Long id){
         Address adrress = (Address) facade.getById(id, CLASS_NAME);
         adrress.getUser().setAddress(null);
         facade.disable(id, CLASS_NAME);

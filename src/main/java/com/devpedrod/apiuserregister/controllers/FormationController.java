@@ -1,9 +1,13 @@
 package com.devpedrod.apiuserregister.controllers;
 
+import com.devpedrod.apiuserregister.domain.DomainEntity;
 import com.devpedrod.apiuserregister.domain.Formation;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.facade.Facade;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -28,6 +32,21 @@ public class FormationController {
                 .path("/api/v1/formations/{id}")
                 .buildAndExpand(formation.getId())
                 .toUri()).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateFormation(@RequestBody @Valid Formation formation, @PathVariable Long id){
+        formation.setId(id);
+        Formation oldFormation = (Formation) facade.getById(id, CLASS_NAME);
+        formation.setUser(oldFormation.getUser());
+        BeanUtils.copyProperties(formation, oldFormation);
+        facade.update(formation);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<DomainEntity>> getAll(Pageable pageable){
+        return ResponseEntity.ok(facade.getAll(pageable, CLASS_NAME));
     }
 
     @GetMapping("/{id}")
