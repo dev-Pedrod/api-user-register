@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user){
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user){
         user.setId(id);
         User oldUser = (User) facade.getById(id, CLASS_NAME);
         user.getAddress().setId(oldUser.getAddress().getId());

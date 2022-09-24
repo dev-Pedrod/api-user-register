@@ -4,7 +4,6 @@ import com.devpedrod.apiuserregister.domain.Address;
 import com.devpedrod.apiuserregister.domain.DomainEntity;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.facade.Facade;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,20 +18,17 @@ import javax.validation.Valid;
 @RequestMapping("/api/v1/address")
 public class AddressController {
     private final String CLASS_NAME = Address.class.getName();
-
-    @Autowired
-    private ModelMapper modelMapper;
     @Autowired
     private Facade facade;
 
-    @PostMapping
-    public ResponseEntity<Void> createAddress(@RequestBody @Valid Address address, @RequestParam Long userId){
+    @PostMapping("/{userId}")
+    public ResponseEntity<Void> createAddress(@RequestBody @Valid Address address, @PathVariable Long userId){
         address.setUser((User) facade.getById(userId, User.class.getName()));
         address.getUser().setAddress(address);
         facade.save(address);
         return ResponseEntity.created(ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
+                .fromCurrentContextPath()
+                .path("/api/v1/address/{id}")
                 .buildAndExpand(address.getId())
                 .toUri()).build();
     }
