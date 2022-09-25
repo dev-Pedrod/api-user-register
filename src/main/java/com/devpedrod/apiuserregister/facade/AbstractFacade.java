@@ -1,17 +1,16 @@
 package com.devpedrod.apiuserregister.facade;
 
-import com.devpedrod.apiuserregister.dao.impl.AddressDAO;
-import com.devpedrod.apiuserregister.dao.impl.FormationDAO;
-import com.devpedrod.apiuserregister.dao.impl.GenericDAO;
-import com.devpedrod.apiuserregister.dao.impl.UserDAO;
+import com.devpedrod.apiuserregister.dao.impl.*;
 import com.devpedrod.apiuserregister.domain.Address;
 import com.devpedrod.apiuserregister.domain.Formation;
+import com.devpedrod.apiuserregister.domain.Permission;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.strategy.IStrategy;
 import com.devpedrod.apiuserregister.strategy.address.AddressStrategy;
 import com.devpedrod.apiuserregister.strategy.address.DeleteAddressStrategy;
 import com.devpedrod.apiuserregister.strategy.formation.DisableFormationStrategy;
 import com.devpedrod.apiuserregister.strategy.formation.FormationStrategy;
+import com.devpedrod.apiuserregister.strategy.permission.PermissionStrategy;
 import com.devpedrod.apiuserregister.strategy.user.UserDisableStrategy;
 import com.devpedrod.apiuserregister.strategy.user.UserStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +43,11 @@ public abstract class AbstractFacade {
     private FormationStrategy formationStrategy;
     @Autowired
     private DisableFormationStrategy disableFormationStrategy;
+
+    @Autowired
+    private PermissionDAO permissionDAO;
+    @Autowired
+    private PermissionStrategy permissionStrategy;
 
 
     public void initialize(){
@@ -83,6 +87,17 @@ public abstract class AbstractFacade {
 
         businessRule.put(Formation.class.getName(), mapKeyFormation);
 
+        //----------------------- Permission --------------------------//
+        daos.put(Permission.class.getName(), permissionDAO);
+
+        List<IStrategy> rulesPermission = new ArrayList<>(Collections.singleton(permissionStrategy));
+        //List<IStrategy> rulesDisablePermission = new ArrayList<>(Collections.singleton(disableFormationStrategy));
+
+        Map<String,List<IStrategy>> mapKeyPermission = new HashMap<>();
+        mapKeyPermission.put("SAVE", rulesPermission);
+       // mapKeyPermission.put("DISABLE", rulesDisablePermission);
+
+        businessRule.put(Permission.class.getName(), mapKeyPermission);
     }
 
 }
