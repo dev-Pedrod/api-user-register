@@ -29,7 +29,10 @@ public class UserService implements IUserService {
         User user = userDAO.getById(id);
         user.setStatus(status);
         if(status == BLOCKED && user.getPermissions() != null) {
-            user.getPermissions().forEach(permission -> permission.getUsers().remove(user));
+            user.getPermissions().forEach(permission -> {
+                permission.getUsers().remove(user);
+                permissionDAO.save(permission);
+            });
             user.getPermissions().clear();
         }
         userDAO.save(user);
