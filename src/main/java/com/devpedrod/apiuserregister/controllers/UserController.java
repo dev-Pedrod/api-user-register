@@ -39,6 +39,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Void> createUser(@RequestBody @Valid User user){
+        user.getFormations().forEach(x -> x.setUser(user));
         facade.save(user);
         return ResponseEntity.created(ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -48,10 +49,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user){
-        user.setId(id);
+    public ResponseEntity<Void> updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto){
+        userDto.setId(id);
         User oldUser = (User) facade.getById(id, CLASS_NAME);
-        user.getAddress().setId(oldUser.getAddress().getId());
+        User user = modelMapper.map(userDto, User.class);
+        if(oldUser.getAddress() != null){
+            user.setAddress(oldUser.getAddress());
+        }
         BeanUtils.copyProperties(user, oldUser);
         facade.update(user);
         return ResponseEntity.ok().build();

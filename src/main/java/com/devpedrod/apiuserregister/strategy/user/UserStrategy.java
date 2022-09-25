@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserStrategy implements IStrategy {
@@ -34,11 +35,13 @@ public class UserStrategy implements IStrategy {
             if (!CpfValidator.isValidCPF(user.getCpf())){
                 fieldMessages.add(new FieldMessage("CPF","CPF ínvalido"));
             }
-            if (!NameValidator.validateName(user.getName())) {
+            if (!NameValidator.isValidName(user.getName())) {
                 fieldMessages.add(new FieldMessage("Nome","Nome ínvalido, use somente letras."));
             }
             if (userRepository.findByCpf(user.getCpf()).isPresent()) {
-                fieldMessages.add(new FieldMessage("CPF", "Este CPF já esta cadastrado"));
+                if (!Objects.equals(user.getId(), userRepository.findByCpf(user.getCpf()).get().getId())){
+                    fieldMessages.add(new FieldMessage("CPF", "Este CPF já esta cadastrado"));
+                }
             }
             if (!fieldMessages.isEmpty()){
                 throw new MethodArgumentNotValidException(fieldMessages);
