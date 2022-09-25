@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -29,6 +30,6 @@ public class Permission extends DomainEntity {
     private String permission;
 
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 }

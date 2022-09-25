@@ -3,6 +3,8 @@ package com.devpedrod.apiuserregister.controllers;
 import com.devpedrod.apiuserregister.domain.DomainEntity;
 import com.devpedrod.apiuserregister.domain.Permission;
 import com.devpedrod.apiuserregister.facade.Facade;
+import com.fasterxml.jackson.databind.util.BeanUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,27 @@ public class PermissionController {
                 .path("/{id}")
                 .buildAndExpand(permission.getId())
                 .toUri()).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updatePermission(@PathVariable Long id, @RequestBody @Valid Permission permission){
+        permission.setId(id);
+        Permission oldPermisson = (Permission) facade.getById(id, CLASS_NAME);
+        BeanUtils.copyProperties(permission, oldPermisson);
+        facade.update(permission);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePermission(@PathVariable Long id){
+        facade.delete(id, CLASS_NAME);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("disable/{id}")
+    public ResponseEntity<Void> disablePermission(@PathVariable Long id){
+        facade.disable(id, CLASS_NAME);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
