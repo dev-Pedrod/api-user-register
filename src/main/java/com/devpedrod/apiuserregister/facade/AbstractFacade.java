@@ -91,11 +91,9 @@ public abstract class AbstractFacade {
         daos.put(Permission.class.getName(), permissionDAO);
 
         List<IStrategy> rulesPermission = new ArrayList<>(Collections.singleton(permissionStrategy));
-        //List<IStrategy> rulesDisablePermission = new ArrayList<>(Collections.singleton(disableFormationStrategy));
 
         Map<String,List<IStrategy>> mapKeyPermission = new HashMap<>();
         mapKeyPermission.put("SAVE", rulesPermission);
-       // mapKeyPermission.put("DISABLE", rulesDisablePermission);
 
         businessRule.put(Permission.class.getName(), mapKeyPermission);
     }
