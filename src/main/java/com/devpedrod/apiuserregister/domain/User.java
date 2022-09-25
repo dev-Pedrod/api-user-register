@@ -1,31 +1,44 @@
 package com.devpedrod.apiuserregister.domain;
 
+import com.devpedrod.apiuserregister.domain.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "tb_user")
 @Getter @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "disabled_at is null")
 public class User extends DomainEntity {
-    private String nome;
+    @NotNull(message = "O nome não pode ser nulo")
+    private String name;
+
+    @NotNull(message = "O CPF não pode ser em nulo")
+    @Column(unique = true)
     private String cpf;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Formation> formations = new ArrayList<>();
-    @OneToOne
+
+    @Valid
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
-    @ManyToMany(mappedBy = "users")
-    private List<Permissions> permissions = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    private Set<Permission> permissions = new HashSet<>();
+
+    public User(){
+        super();
+        this.status = Status.ACTIVE;
+    }
 }
