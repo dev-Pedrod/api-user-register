@@ -6,6 +6,7 @@ import com.devpedrod.apiuserregister.dto.UpdateStatusDto;
 import com.devpedrod.apiuserregister.dto.user.UserDto;
 import com.devpedrod.apiuserregister.facade.Facade;
 import com.devpedrod.apiuserregister.services.ISqsService;
+import com.devpedrod.apiuserregister.services.IUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -28,13 +30,21 @@ public class UserController {
     private Facade facade;
     @Autowired
     private ISqsService sqsService;
+    @Autowired
+    private IUserService userService;
 
-    @PutMapping("/update-status/")
+    @PutMapping("/update-status")
     public ResponseEntity<String> updateStatus(@RequestBody @Valid UpdateStatusDto updateStatusDto){
         facade.getById(updateStatusDto.getUserId(), CLASS_NAME);
         updateStatusDto.setStatus(Status.valueOf(updateStatusDto.getStatus().name().toUpperCase()));
         sqsService.sqsSendStatus(updateStatusDto);
         return ResponseEntity.ok(updateStatusDto.getStatus().name());
+    }
+
+    @PutMapping("/add-permisions/{userId}")
+    public ResponseEntity<Void> updateStatus(@PathVariable Long userId ,@RequestBody Set<Long> permisionsIds){
+        userService.addPermisions((User) facade.getById(userId, CLASS_NAME), permisionsIds);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping
