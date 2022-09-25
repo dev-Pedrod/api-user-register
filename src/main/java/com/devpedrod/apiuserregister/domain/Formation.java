@@ -21,9 +21,11 @@ public class Formation extends DomainEntity {
     @NotBlank(message = "Nome não pode ser em branco")
     @NotNull(message = "Nome não pode ser nulo")
     private String name;
+
     @NotBlank(message = "Instituição não pode ser em branco")
     @NotNull(message = "Instituição não pode ser nulo")
     private String institution;
+
     @JsonIgnore
     @ManyToOne
     private User user;

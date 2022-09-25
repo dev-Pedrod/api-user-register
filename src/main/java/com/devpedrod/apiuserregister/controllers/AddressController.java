@@ -18,6 +18,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/v1/address")
 public class AddressController {
     private final String CLASS_NAME = Address.class.getName();
+
     @Autowired
     private Facade facade;
 

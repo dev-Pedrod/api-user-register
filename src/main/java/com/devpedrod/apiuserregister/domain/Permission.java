@@ -9,8 +9,10 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "tb_permissions")
 @Getter @Setter
@@ -18,9 +20,15 @@ import java.util.List;
 @NoArgsConstructor
 @Where(clause = "disabled_at is null")
 public class Permission extends DomainEntity {
+    @NotBlank(message = "Nome não pode ser em branco")
+    @NotNull(message = "Nome não pode ser nulo")
     private String name;
+
+    @NotBlank(message = "Permissão  não pode ser em branco")
+    @NotNull(message = "Permissão não pode ser nulo")
     private String permission;
+
     @JsonIgnore
-    @ManyToMany()
-    private List<User> users = new ArrayList<>();
+    @ManyToMany
+    private Set<User> users = new HashSet<>();
 }

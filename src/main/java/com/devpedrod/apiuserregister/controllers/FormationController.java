@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/formations")

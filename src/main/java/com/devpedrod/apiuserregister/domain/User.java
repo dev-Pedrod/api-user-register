@@ -10,7 +10,9 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "tb_user")
 @Getter @Setter
@@ -19,19 +21,21 @@ import java.util.List;
 public class User extends DomainEntity {
     @NotNull(message = "O nome não pode ser nulo")
     private String name;
+
     @NotNull(message = "O CPF não pode ser em nulo")
     @Column(unique = true)
     private String cpf;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Formation> formations = new ArrayList<>();
+
     @Valid
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
     @Enumerated(EnumType.STRING)
     private Status status;
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
-    private List<Permission> permissions = new ArrayList<>();
+    private Set<Permission> permissions = new HashSet<>();
 
     public User(){
         super();
