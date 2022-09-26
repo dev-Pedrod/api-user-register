@@ -15,14 +15,11 @@ public class AddressStrategy implements IStrategy {
     @Override
     public DomainEntity applyBusinessRule(DomainEntity domainEntity) {
         if(domainEntity instanceof Address address){
-            if(address.getUser().getAddress() != null){
-                addressDAO.delete(address.getUser().getAddress().getId());
-            }
             address.getUser().setAddress(address);
             address.setCity(address.getCity().replaceAll("\\s+"," ").trim());
             address.setCountry(address.getCountry().replaceAll("\\s+"," ").trim());
             address.setStreet(address.getStreet().replaceAll("\\s+"," ").trim());
-            address.setState(address.getState().replaceAll("\\s+"," ").trim());
+            address.setNeighborhood(address.getNeighborhood().replaceAll("\\s+"," ").trim());
             return address;
         }
         return null;
