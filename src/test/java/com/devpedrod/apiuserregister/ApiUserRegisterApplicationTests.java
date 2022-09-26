@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ApiUserRegisterApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void main() {
+		ApiUserRegisterApplication.main(new String[] {});
 	}
-
 }
