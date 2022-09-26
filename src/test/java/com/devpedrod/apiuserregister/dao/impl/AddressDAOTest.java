@@ -12,7 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 class AddressDAOTest {
@@ -70,6 +74,18 @@ class AddressDAOTest {
             Assertions.assertEquals(ObjectNotFoundException.class, e.getClass());
             Assertions.assertEquals(OBJECT_NOT_FOUND_MSG, e.getMessage());
         }
+    }
+
+    @Test
+    void whenGetAllThenReturnAnListOfAddress(){
+        Mockito.when(addressRepository.findAll(PageRequest.of(1,1)))
+                .thenReturn(new PageImpl<>(List.of(address)));
+
+        Page<Address> addressPage = addressDAO.getAll(PageRequest.of(1,1));
+
+        Assertions.assertNotNull(addressPage);
+        Assertions.assertEquals(1, addressPage.getTotalElements());
+        Assertions.assertEquals(address, addressPage.toList().get(0));
     }
 
     private void startEntities() {
