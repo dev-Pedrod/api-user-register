@@ -1,20 +1,24 @@
 package com.devpedrod.apiuserregister.dao.impl;
 
-import com.devpedrod.apiuserregister.domain.Address;
 import com.devpedrod.apiuserregister.domain.Formation;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.domain.enums.Status;
-import com.devpedrod.apiuserregister.repositories.AddressRepository;
+import com.devpedrod.apiuserregister.exceptions.ObjectNotFoundException;
 import com.devpedrod.apiuserregister.repositories.FormationRepository;
-import com.devpedrod.apiuserregister.strategy.address.AddressStrategy;
-import com.devpedrod.apiuserregister.strategy.address.DeleteAddressStrategy;
 import com.devpedrod.apiuserregister.strategy.formation.DisableFormationStrategy;
 import com.devpedrod.apiuserregister.strategy.formation.FormationStrategy;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 public class FormationDAOTest {
@@ -47,7 +51,42 @@ public class FormationDAOTest {
         startEntities();
     }
 
-    
+    @Test
+    void whenGetByIdThenReturnAnFormationInstance() {
+        Mockito.when(formationRepository.findById(ID)).thenReturn(optionalFormation);
+        Formation formationResponse = formationDAO.getById(ID);
+
+        Assertions.assertNotNull(formationResponse);
+        Assertions.assertEquals(Formation.class, formationResponse.getClass());
+        Assertions.assertEquals(ID, formationResponse.getId());
+        Assertions.assertEquals(NAME, formationResponse.getName());
+        Assertions.assertEquals(INSTITUITION, formationResponse.getInstitution());
+        Assertions.assertEquals(user, formationResponse.getUser());
+    }
+
+    @Test
+    void whenGetByIdThenReturnAnObjectNotFoundException() {
+        Mockito.when(formationRepository.findById(ID_FOR_EXCEPTIONS))
+                .thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND_MSG));
+        try {
+            formationDAO.getById(ID_FOR_EXCEPTIONS);
+        } catch (Exception e){
+            Assertions.assertEquals(ObjectNotFoundException.class, e.getClass());
+            Assertions.assertEquals(OBJECT_NOT_FOUND_MSG, e.getMessage());
+        }
+    }
+
+    @Test
+    void whenGetAllThenReturnAnListOfFormation(){
+        Mockito.when(formationRepository.findAll(PageRequest.of(1,1)))
+                .thenReturn(new PageImpl<>(List.of(formation)));
+
+        Page<Formation> formationPage = formationDAO.getAll(PageRequest.of(1,1));
+
+        Assertions.assertNotNull(formationPage);
+        Assertions.assertEquals(1, formationPage.getTotalElements());
+        Assertions.assertEquals(formation, formationPage.toList().get(0));
+    }
 
     private void startEntities() {
         user = new User("João", "492.776.840-62", null, null, Status.ACTIVE, null);
@@ -55,5 +94,4 @@ public class FormationDAOTest {
         formation.setId(ID);
         optionalFormation = Optional.of(formation);
     }
-
 }
