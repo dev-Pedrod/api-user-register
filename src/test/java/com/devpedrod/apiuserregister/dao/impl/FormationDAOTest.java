@@ -42,8 +42,8 @@ public class FormationDAOTest {
 
     // Address parameters
     public static final Long ID = 1L;
-    public static final String NAME = "Ciência da computação";
-    public static final String INSTITUITION = "UFMG";
+    public static final String NAME = "   Ciência  da  computação    ";
+    public static final String INSTITUITION = "    UFMG    ";
 
     @BeforeEach
     void setUp() {
@@ -86,6 +86,37 @@ public class FormationDAOTest {
         Assertions.assertNotNull(formationPage);
         Assertions.assertEquals(1, formationPage.getTotalElements());
         Assertions.assertEquals(formation, formationPage.toList().get(0));
+    }
+
+    @Test
+    void whenCreateThenReturnSuccess() {
+        Mockito.when(formationRepository.save(formation)).thenReturn(formation);
+
+        user.setFormations(List.of(formation));
+        formationDAO.save(formation);
+
+        Mockito.verify(formationRepository, Mockito.times(1)).save(formation);
+        Assertions.assertNotEquals(formation.getCreatedAt(), null);
+        Assertions.assertEquals(formation.getUser(), user);
+        Assertions.assertEquals(formation.getUser().getFormations().get(0), formation);
+    }
+
+    @Test
+    void whenCreateWithStrategyThenReturnSuccess() {
+        Mockito.when(formationRepository.save(formation)).thenReturn(formation);
+
+        user.setFormations(List.of(formation));
+        formationDAO.save(formation, obj -> {
+            formationStrategy.applyBusinessRule(obj);
+            return obj;
+        });
+
+        Mockito.verify(formationRepository, Mockito.times(1)).save(formation);
+        Assertions.assertNotEquals(formation.getCreatedAt(), null);
+        Assertions.assertEquals(formation.getUser(), user);
+        Assertions.assertEquals(formation.getUser().getFormations().get(0), formation);
+        Assertions.assertEquals(formation.getName(), formation.getName().replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(formation.getInstitution(), formation.getInstitution().replaceAll("\\s+"," ").trim());
     }
 
     private void startEntities() {
