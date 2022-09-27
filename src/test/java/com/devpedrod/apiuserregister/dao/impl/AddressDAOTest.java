@@ -5,13 +5,12 @@ import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.domain.enums.Status;
 import com.devpedrod.apiuserregister.exceptions.ObjectNotFoundException;
 import com.devpedrod.apiuserregister.repositories.AddressRepository;
+import com.devpedrod.apiuserregister.strategy.address.AddressStrategy;
+import com.devpedrod.apiuserregister.strategy.address.DeleteAddressStrategy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +22,10 @@ class AddressDAOTest {
 
     @InjectMocks
     private AddressDAO addressDAO;
+    @InjectMocks
+    private AddressStrategy addressStrategy;
+    @InjectMocks
+    private DeleteAddressStrategy deleteAddressStrategy;
     @Mock
     private AddressRepository addressRepository;
 
@@ -88,8 +91,120 @@ class AddressDAOTest {
         Assertions.assertEquals(address, addressPage.toList().get(0));
     }
 
+    @Test
+    void whenCreateThenReturnSuccess() {
+        Mockito.when(addressRepository.save(address)).thenReturn(address);
+        addressDAO.save(address);
+
+        Mockito.verify(addressRepository, Mockito.times(1)).save(address);
+        Assertions.assertNotEquals(address.getCreatedAt(), null);
+    }
+
+    @Test
+    void whenCreateWithStrategyThenReturnSuccess() {
+        Mockito.when(addressRepository.save(address)).thenReturn(address);
+
+        addressDAO.save(address, obj -> {
+            addressStrategy.applyBusinessRule(obj);
+            return obj;
+        });
+
+        Mockito.verify(addressRepository, Mockito.times(1)).save(address);
+        Assertions.assertNotEquals(address.getCreatedAt(), null);
+        Assertions.assertEquals(address.getUser(), user);
+        Assertions.assertEquals(address.getUser().getAddress(), address);
+    }
+
+    @Test
+    void whenUpdateThenReturnSuccess() {
+        Mockito.when(addressRepository.saveAndFlush(address)).thenReturn(address);
+        addressDAO.update(address);
+
+        Mockito.verify(addressRepository, Mockito.times(1)).saveAndFlush(address);
+        Assertions.assertNotEquals(address.getUpdatedAt(), null);
+        Assertions.assertNotEquals(address.getUpdatedAt(), address.getCreatedAt());
+    }
+
+    @Test
+    void whenUpdateWithStrategyThenReturnSuccess() {
+        Mockito.when(addressRepository.saveAndFlush(address)).thenReturn(address);
+
+        addressDAO.update(address, obj -> {
+            addressStrategy.applyBusinessRule(obj);
+            return obj;
+        });
+
+        Mockito.verify(addressRepository, Mockito.times(1)).saveAndFlush(address);
+        Assertions.assertEquals(address.getUser(), user);
+        Assertions.assertEquals(address.getUser().getAddress(), address);
+        Assertions.assertNotEquals(address.getUpdatedAt(), null);
+        Assertions.assertNotEquals(address.getUpdatedAt(), address.getCreatedAt());
+        Assertions.assertTrue(address.getUpdatedAt().isAfter(address.getCreatedAt()));
+    }
+
+    @Test
+    void deleteWithSuccess(){
+        Mockito.when(addressRepository.findById(ID)).thenReturn(optionalAddress);
+        Mockito.doNothing().when(addressRepository).delete(address);
+
+        user.setAddress(address);
+
+        addressDAO.delete(ID);
+
+        Mockito.verify(addressRepository, Mockito.times(1)).delete(address);
+    }
+
+    @Test
+    void deleteWithStrategyWithSuccess(){
+        Mockito.when(addressRepository.findById(ID)).thenReturn(optionalAddress);
+        Mockito.doNothing().when(addressRepository).delete(address);
+
+        user.setAddress(address);
+
+        addressDAO.delete(ID, obj -> {
+            deleteAddressStrategy.applyBusinessRule(obj);
+            return obj;
+        });
+
+        Assertions.assertNull(address.getUser());
+        Assertions.assertNull(user.getAddress());
+        Mockito.verify(addressRepository, Mockito.times(1)).delete(address);
+    }
+
+    @Test
+    void disableWithSuccess(){
+        Mockito.when(addressRepository.findById(ID)).thenReturn(optionalAddress);
+        Mockito.when(addressRepository.save(address)).thenReturn(address);
+
+        addressDAO.disable(ID);
+
+        Assertions.assertNotNull(address.getDisabledAt());
+        Assertions.assertTrue(address.getDisabledAt().isAfter(address.getCreatedAt()));
+
+        Mockito.verify(addressRepository, Mockito.times(1)).save(address);
+    }
+
+    @Test
+    void disableWithStrategyWithSuccess(){
+        Mockito.when(addressRepository.findById(ID)).thenReturn(optionalAddress);
+        Mockito.when(addressRepository.save(address)).thenReturn(address);
+
+        user.setAddress(address);
+
+        addressDAO.disable(ID, obj -> {
+            obj.getUser().setAddress(null);
+            return obj;
+        });
+
+        Assertions.assertNotNull(address.getDisabledAt());
+        Assertions.assertTrue(address.getDisabledAt().isAfter(address.getCreatedAt()));
+        Assertions.assertNull(user.getAddress());
+
+        Mockito.verify(addressRepository, Mockito.times(1)).save(address);
+    }
+
     private void startEntities() {
-        user = new User("João", "492.776.840-62", null, address, Status.ACTIVE, null);
+        user = new User("João", "492.776.840-62", null, null, Status.ACTIVE, null);
         address = new Address(STREET, NUMBER, CITY, NEIGHBORHOOD, COUNTRY, user);
         address.setId(ID);
         optionalAddress = Optional.of(address);
