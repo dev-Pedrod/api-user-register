@@ -39,11 +39,11 @@ class AddressDAOTest {
 
     // Address parameters
     public static final Long ID = 1L;
-    public static final String STREET = "Rua 3";
+    public static final String STREET = "Rua 3  ";
     public static final Integer NUMBER = 1;
-    public static final String CITY = "Belo Horizonte";
-    public static final String NEIGHBORHOOD = "Pampulha";
-    public static final String COUNTRY = "Brasil";
+    public static final String CITY = " Belo   Horizonte";
+    public static final String NEIGHBORHOOD = "  Pampulha  ";
+    public static final String COUNTRY = "Brasil   ";
 
     @BeforeEach
     void setUp() {
@@ -113,6 +113,11 @@ class AddressDAOTest {
         Assertions.assertNotEquals(address.getCreatedAt(), null);
         Assertions.assertEquals(address.getUser(), user);
         Assertions.assertEquals(address.getUser().getAddress(), address);
+
+        Assertions.assertEquals(address.getStreet(), STREET.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(address.getCity(), CITY.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(address.getCountry(), COUNTRY.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(address.getNeighborhood(), NEIGHBORHOOD.replaceAll("\\s+"," ").trim());
     }
 
     @Test
@@ -140,6 +145,11 @@ class AddressDAOTest {
         Assertions.assertNotEquals(address.getUpdatedAt(), null);
         Assertions.assertNotEquals(address.getUpdatedAt(), address.getCreatedAt());
         Assertions.assertTrue(address.getUpdatedAt().isAfter(address.getCreatedAt()));
+
+        Assertions.assertEquals(address.getStreet(), STREET.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(address.getCity(), CITY.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(address.getCountry(), COUNTRY.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(address.getNeighborhood(), NEIGHBORHOOD.replaceAll("\\s+"," ").trim());
     }
 
     @Test
