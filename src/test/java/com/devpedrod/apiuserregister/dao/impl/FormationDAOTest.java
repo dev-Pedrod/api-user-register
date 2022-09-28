@@ -41,7 +41,7 @@ public class FormationDAOTest {
     public static final long ID_FOR_EXCEPTIONS = 2L;
     public static final String OBJECT_NOT_FOUND_MSG = "Objeto não encontrado, id: " + ID_FOR_EXCEPTIONS;
 
-    // Address parameters
+    // Formation parameters
     public static final Long ID = 1L;
     public static final String NAME = "   Ciência  da  computação    ";
     public static final String INSTITUITION = "    UFMG    ";
@@ -116,13 +116,14 @@ public class FormationDAOTest {
         Assertions.assertNotEquals(formation.getCreatedAt(), null);
         Assertions.assertEquals(formation.getUser(), user);
         Assertions.assertEquals(formation.getUser().getFormations().get(0), formation);
-        Assertions.assertEquals(formation.getName(), formation.getName().replaceAll("\\s+"," ").trim());
-        Assertions.assertEquals(formation.getInstitution(), formation.getInstitution().replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(formation.getName(), NAME.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(formation.getInstitution(), INSTITUITION.replaceAll("\\s+"," ").trim());
     }
 
     @Test
     void whenUpdateThenReturnSuccess() {
         Mockito.when(formationRepository.saveAndFlush(formation)).thenReturn(formation);
+
         formationDAO.update(formation);
 
         Mockito.verify(formationRepository, Mockito.times(1)).saveAndFlush(formation);
@@ -145,8 +146,8 @@ public class FormationDAOTest {
         Assertions.assertNotEquals(formation.getCreatedAt(), null);
         Assertions.assertEquals(formation.getUser(), user);
         Assertions.assertEquals(formation.getUser().getFormations().get(0), formation);
-        Assertions.assertEquals(formation.getName(), formation.getName().replaceAll("\\s+"," ").trim());
-        Assertions.assertEquals(formation.getInstitution(), formation.getInstitution().replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(formation.getName(), NAME.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(formation.getInstitution(), INSTITUITION.replaceAll("\\s+"," ").trim());
     }
 
     @Test
