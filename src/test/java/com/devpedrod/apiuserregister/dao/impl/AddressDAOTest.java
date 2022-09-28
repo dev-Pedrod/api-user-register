@@ -157,8 +157,6 @@ class AddressDAOTest {
         Mockito.when(addressRepository.findById(ID)).thenReturn(optionalAddress);
         Mockito.doNothing().when(addressRepository).delete(address);
 
-        user.setAddress(address);
-
         addressDAO.delete(ID);
 
         Mockito.verify(addressRepository, Mockito.times(1)).delete(address);

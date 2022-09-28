@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,10 +120,94 @@ public class FormationDAOTest {
         Assertions.assertEquals(formation.getInstitution(), formation.getInstitution().replaceAll("\\s+"," ").trim());
     }
 
+    @Test
+    void whenUpdateThenReturnSuccess() {
+        Mockito.when(formationRepository.saveAndFlush(formation)).thenReturn(formation);
+        formationDAO.update(formation);
+
+        Mockito.verify(formationRepository, Mockito.times(1)).saveAndFlush(formation);
+        Assertions.assertNotEquals(formation.getUpdatedAt(), null);
+        Assertions.assertTrue(formation.getUpdatedAt().isAfter(formation.getCreatedAt()));
+    }
+
+    @Test
+    void whenUpdateWithStrategyThenReturnSuccess() {
+        Mockito.when(formationRepository.saveAndFlush(formation)).thenReturn(formation);
+
+        user.setFormations(List.of(formation));
+
+        formationDAO.update(formation, obj -> {
+            formationStrategy.applyBusinessRule(obj);
+            return obj;
+        });
+
+        Mockito.verify(formationRepository, Mockito.times(1)).saveAndFlush(formation);
+        Assertions.assertNotEquals(formation.getCreatedAt(), null);
+        Assertions.assertEquals(formation.getUser(), user);
+        Assertions.assertEquals(formation.getUser().getFormations().get(0), formation);
+        Assertions.assertEquals(formation.getName(), formation.getName().replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(formation.getInstitution(), formation.getInstitution().replaceAll("\\s+"," ").trim());
+    }
+
+    @Test
+    void deleteWithSuccess(){
+        Mockito.when(formationRepository.findById(ID)).thenReturn(optionalFormation);
+        Mockito.doNothing().when(formationRepository).delete(formation);
+
+        formationDAO.delete(ID);
+
+        Mockito.verify(formationRepository, Mockito.times(1)).delete(formation);
+    }
+
+    @Test
+    void deleteWithStrategyWithSuccess(){
+        Mockito.when(formationRepository.findById(ID)).thenReturn(optionalFormation);
+        Mockito.doNothing().when(formationRepository).delete(formation);
+
+        formationDAO.delete(ID, obj -> {
+            formation.setUser(null);
+            return obj;
+        });
+
+        Assertions.assertNull(formation.getUser());
+        Mockito.verify(formationRepository, Mockito.times(1)).delete(formation);
+    }
+
+    @Test
+    void disableWithSuccess(){
+        Mockito.when(formationRepository.findById(ID)).thenReturn(optionalFormation);
+        Mockito.when(formationRepository.save(formation)).thenReturn(formation);
+
+        formationDAO.disable(ID);
+
+        Assertions.assertNotNull(formation.getDisabledAt());
+        Assertions.assertTrue(formation.getDisabledAt().isAfter(formation.getCreatedAt()));
+
+        Mockito.verify(formationRepository, Mockito.times(1)).save(formation);
+    }
+
+    @Test
+    void disableWithStrategyWithSuccess(){
+        Mockito.when(formationRepository.findById(ID)).thenReturn(optionalFormation);
+        Mockito.when(formationRepository.save(formation)).thenReturn(formation);
+
+        user.setFormations(List.of(formation));
+
+        formationDAO.disable(ID, obj -> {
+            disableFormationStrategy.applyBusinessRule(obj);
+            return obj;
+        });
+        Assertions.assertNotNull(formation.getDisabledAt());
+        Assertions.assertTrue(formation.getDisabledAt().isAfter(formation.getCreatedAt()));
+
+        Mockito.verify(formationRepository, Mockito.times(1)).save(formation);
+    }
+
     private void startEntities() {
         user = new User("João", "492.776.840-62", null, null, Status.ACTIVE, null);
         formation = new Formation(NAME, INSTITUITION, user);
         formation.setId(ID);
+        formation.setCreatedAt(LocalDateTime.now());
         optionalFormation = Optional.of(formation);
     }
 }
