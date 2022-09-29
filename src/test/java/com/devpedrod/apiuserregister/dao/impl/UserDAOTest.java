@@ -75,13 +75,53 @@ class UserDAOTest {
         MockitoAnnotations.openMocks(this);
         startEntities();
     }
-    
+
+    @Test
+    void whenGetByIdThenReturnAnAddressInstance() {
+        Mockito.when(userRepository.findById(ID)).thenReturn(optionalUser);
+        User userResponse = userDAO.getById(ID);
+
+        Assertions.assertNotNull(userResponse);
+        Assertions.assertEquals(User.class, userResponse.getClass());
+        Assertions.assertEquals(ID, userResponse.getId());
+        Assertions.assertEquals(NAME, userResponse.getName());
+        Assertions.assertEquals(CPF, userResponse.getCpf());
+        Assertions.assertEquals(STATUS_ACTIVE, userResponse.getStatus());
+
+        Assertions.assertEquals(userResponse.getAddress(), address);
+        Assertions.assertEquals(userResponse.getFormations().get(0), formation);
+        Assertions.assertTrue(userResponse.getPermissions().contains(permission));
+    }
+
+    @Test
+    void whenGetByIdThenReturnAnObjectNotFoundException() {
+        Mockito.when(userRepository.findById(ID_FOR_EXCEPTIONS))
+                .thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND_MSG));
+        try {
+            userDAO.getById(ID_FOR_EXCEPTIONS);
+        } catch (Exception e){
+            Assertions.assertEquals(ObjectNotFoundException.class, e.getClass());
+            Assertions.assertEquals(OBJECT_NOT_FOUND_MSG, e.getMessage());
+        }
+    }
+
+    @Test
+    void whenGetAllThenReturnAnListOfAddress(){
+        Mockito.when(userRepository.findAll(PageRequest.of(1,1)))
+                .thenReturn(new PageImpl<>(List.of(user)));
+
+        Page<User> userPage = userDAO.getAll(PageRequest.of(1,1));
+
+        Assertions.assertNotNull(userPage);
+        Assertions.assertEquals(1, userPage.getTotalElements());
+        Assertions.assertEquals(user, userPage.toList().get(0));
+    }
 
     private void startEntities() {
         formation = new Formation(FORMATION_NAME, FORMATION_INSTITUITION, user);
         address = new Address(STREET, NUMBER, CITY, NEIGHBORHOOD, COUNTRY, user);
         permission = new Permission(PERMISSION_NAME, PERMISSION, (Set<User>) user);
-        user = new User(PERMISSION_NAME, CPF, List.of(formation), address, STATUS_ACTIVE, Set.of(permission));
+        user = new User(NAME, CPF, List.of(formation), address, STATUS_ACTIVE, Set.of(permission));
 
         user.setId(ID);
         formation.setId(FORMATION_ID);
