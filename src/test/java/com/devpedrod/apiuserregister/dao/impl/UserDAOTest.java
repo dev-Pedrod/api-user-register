@@ -5,6 +5,9 @@ import com.devpedrod.apiuserregister.domain.Formation;
 import com.devpedrod.apiuserregister.domain.Permission;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.domain.enums.Status;
+import com.devpedrod.apiuserregister.dto.response.FieldMessage;
+import com.devpedrod.apiuserregister.exceptions.DataIntegrityException;
+import com.devpedrod.apiuserregister.exceptions.MethodArgumentNotValidException;
 import com.devpedrod.apiuserregister.exceptions.ObjectNotFoundException;
 import com.devpedrod.apiuserregister.repositories.UserRepository;
 import com.devpedrod.apiuserregister.strategy.user.UserDisableStrategy;
@@ -44,6 +47,8 @@ class UserDAOTest {
     // Exceptions
     public static final long ID_FOR_EXCEPTIONS = 2L;
     public static final String OBJECT_NOT_FOUND_MSG = "Objeto não encontrado, id: " + ID_FOR_EXCEPTIONS;
+    public static final MethodArgumentNotValidException METHOD_ARGUMENT_NOT_VALID_EXCEPTION = new MethodArgumentNotValidException(List.of(new FieldMessage("CPF","CPF ínvalido")));
+
     public static final String DATA_INTEGRITY_MESSAGE = "Este CPF já está cadastrado";
 
     // User parameters
@@ -115,6 +120,70 @@ class UserDAOTest {
         Assertions.assertNotNull(userPage);
         Assertions.assertEquals(1, userPage.getTotalElements());
         Assertions.assertEquals(user, userPage.toList().get(0));
+    }
+
+    @Test
+    void whenCreateThenReturnSuccess() {
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+        userDAO.save(user);
+
+        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+        Assertions.assertNotEquals(user.getCreatedAt(), null);
+    }
+
+    @Test
+    void whenCreateThenReturnADataIntegrityException() {
+        User userForException = new User(NAME, CPF, null, null, null, null);
+
+        Mockito.when(userRepository.findByCpf(CPF)).thenReturn(optionalUser);
+        Mockito.when(userRepository.save(user)).thenReturn(userForException);
+
+        userDAO.save(user);
+
+        try {
+            userDAO.save(userForException, obj -> {
+                userStrategy.applyBusinessRule(obj);
+                return obj;
+            });
+        } catch (Exception e){
+            Assertions.assertEquals(DataIntegrityException.class, e.getClass());
+            Assertions.assertEquals(DATA_INTEGRITY_MESSAGE, e.getMessage());
+        }
+    }
+
+    @Test
+    void whenCreateThenReturnAMethodArgumentNotValidException() {
+        User userForException = new User(NAME, "11111111", null, null, null, null);
+        Mockito.when(userRepository.save(user)).thenReturn(userForException);
+
+        try {
+            userDAO.save(userForException, obj -> {
+                userStrategy.applyBusinessRule(obj);
+                return obj;
+            });
+        } catch (MethodArgumentNotValidException e){
+            Assertions.assertEquals(MethodArgumentNotValidException.class, e.getClass());
+            Assertions.assertEquals(METHOD_ARGUMENT_NOT_VALID_EXCEPTION.getMessages().get(0), e.getMessages().get(0));
+        }
+    }
+
+    @Test
+    void whenCreateWithStrategyThenReturnSuccess() {
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+
+        userDAO.save(user, obj -> {
+            userStrategy.applyBusinessRule(obj);
+            return obj;
+        });
+
+        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+        
+        Assertions.assertNotEquals(user.getCreatedAt(), null);
+        Assertions.assertEquals(user.getName(), NAME.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(user.getCpf(), CPF.trim().replaceAll("[.-]", ""));
+        Assertions.assertEquals(user.getAddress(), address);
+        Assertions.assertEquals(user.getFormations().get(0), formation);
+        Assertions.assertTrue(user.getPermissions().contains(permission));
     }
 
     private void startEntities() {
