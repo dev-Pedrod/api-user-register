@@ -41,7 +41,7 @@ public class UserStrategy implements IStrategy {
             }
             if (userRepository.findByCpf(user.getCpf()).isPresent()) {
                 if (!Objects.equals(user.getId(), userRepository.findByCpf(user.getCpf()).get().getId())){
-                    throw new DataIntegrityException("Este CPF já esta cadastrado");
+                    throw new DataIntegrityException("Este CPF já está cadastrado");
                 }
             }
             if (!fieldMessages.isEmpty()){
