@@ -208,7 +208,6 @@ public class FormationDAOTest {
         user = new User("João", "492.776.840-62", null, null, Status.ACTIVE, null);
         formation = new Formation(NAME, INSTITUITION, user);
         formation.setId(ID);
-        formation.setCreatedAt(LocalDateTime.now());
         optionalFormation = Optional.of(formation);
     }
 }

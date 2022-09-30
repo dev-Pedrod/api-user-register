@@ -202,7 +202,6 @@ public class PermissionDAOTest {
         user = new User("João", "492.776.840-62", null, null, Status.ACTIVE, null);
         permission = new Permission(NAME, PERMISSION, Set.of(user));
         permission.setId(ID);
-        permission.setCreatedAt(LocalDateTime.now());
         optionalPermission = Optional.of(permission);
     }
 }

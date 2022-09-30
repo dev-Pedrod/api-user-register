@@ -177,13 +177,89 @@ class UserDAOTest {
         });
 
         Mockito.verify(userRepository, Mockito.times(1)).save(user);
-        
+
         Assertions.assertNotEquals(user.getCreatedAt(), null);
         Assertions.assertEquals(user.getName(), NAME.replaceAll("\\s+"," ").trim());
         Assertions.assertEquals(user.getCpf(), CPF.trim().replaceAll("[.-]", ""));
         Assertions.assertEquals(user.getAddress(), address);
         Assertions.assertEquals(user.getFormations().get(0), formation);
         Assertions.assertTrue(user.getPermissions().contains(permission));
+    }
+
+    @Test
+    void whenUpdateThenReturnSuccess() {
+        Mockito.when(userRepository.saveAndFlush(user)).thenReturn(user);
+
+        userDAO.update(user);
+
+        Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(user);
+        Assertions.assertNotEquals(user.getUpdatedAt(), null);
+        Assertions.assertTrue(user.getUpdatedAt().isAfter(user.getCreatedAt()));
+    }
+
+    @Test
+    void whenUpdateWithStrategyThenReturnSuccess() {
+        Mockito.when(userRepository.saveAndFlush(user)).thenReturn(user);
+
+        userDAO.update(user, obj -> {
+            userStrategy.applyBusinessRule(obj);
+            return obj;
+        });
+
+        Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(user);
+        Assertions.assertNotEquals(user.getCreatedAt(), null);
+        Assertions.assertTrue(user.getUpdatedAt().isAfter(user.getCreatedAt()));
+
+        Assertions.assertEquals(user.getName(), NAME.replaceAll("\\s+"," ").trim());
+        Assertions.assertEquals(user.getCpf(), CPF.trim().replaceAll("[.-]", ""));
+        Assertions.assertEquals(user.getAddress(), address);
+        Assertions.assertEquals(user.getFormations().get(0), formation);
+        Assertions.assertTrue(user.getPermissions().contains(permission));
+    }
+
+    @Test
+    void deleteWithSuccess(){
+        Mockito.when(userRepository.findById(ID)).thenReturn(optionalUser);
+        Mockito.doNothing().when(userRepository).delete(user);
+
+        userDAO.delete(ID);
+
+        Mockito.verify(userRepository, Mockito.times(1)).delete(user);
+    }
+
+    @Test
+    void deleteWithStrategyWithSuccess(){
+        Mockito.when(userRepository.findById(ID)).thenReturn(optionalUser);
+        Mockito.doNothing().when(userRepository).delete(user);
+
+        userDAO.delete(ID, obj -> obj);
+
+        Mockito.verify(userRepository, Mockito.times(1)).delete(user);
+    }
+
+    @Test
+    void disableWithSuccess(){
+        Mockito.when(userRepository.findById(ID)).thenReturn(optionalUser);
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+
+        userDAO.disable(ID);
+
+        Assertions.assertNotNull(user.getDisabledAt());
+        Assertions.assertTrue(user.getDisabledAt().isAfter(user.getCreatedAt()));
+
+        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+    }
+
+    @Test
+    void disableWithStrategyWithSuccess(){
+        Mockito.when(userRepository.findById(ID)).thenReturn(optionalUser);
+        Mockito.when(userRepository.save(user)).thenReturn(user);
+
+        userDAO.disable(ID,
+                obj -> (User) userDisableStrategy.applyBusinessRule(user)
+        );
+        Assertions.assertNotNull(user.getDisabledAt());
+        Assertions.assertTrue(user.getDisabledAt().isAfter(user.getCreatedAt()));
     }
 
     private void startEntities() {
