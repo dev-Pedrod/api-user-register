@@ -3,6 +3,7 @@ package com.devpedrod.apiuserregister.strategy.user;
 import com.devpedrod.apiuserregister.domain.DomainEntity;
 import com.devpedrod.apiuserregister.domain.User;
 import com.devpedrod.apiuserregister.dto.response.FieldMessage;
+import com.devpedrod.apiuserregister.exceptions.DataIntegrityException;
 import com.devpedrod.apiuserregister.exceptions.MethodArgumentNotValidException;
 import com.devpedrod.apiuserregister.repositories.UserRepository;
 import com.devpedrod.apiuserregister.strategy.IStrategy;
@@ -40,7 +41,7 @@ public class UserStrategy implements IStrategy {
             }
             if (userRepository.findByCpf(user.getCpf()).isPresent()) {
                 if (!Objects.equals(user.getId(), userRepository.findByCpf(user.getCpf()).get().getId())){
-                    fieldMessages.add(new FieldMessage("CPF", "Este CPF já esta cadastrado"));
+                    throw new DataIntegrityException("Este CPF já está cadastrado");
                 }
             }
             if (!fieldMessages.isEmpty()){

@@ -30,9 +30,9 @@ public class Address extends DomainEntity{
     @NotNull(message = "Cidade não pode ser nulo")
     private String city;
 
-    @NotBlank(message = "Estado não pode ser em branco")
-    @NotNull(message = "Estado não pode ser nulo")
-    private String state;
+    @NotBlank(message = "Bairro não pode ser em branco")
+    @NotNull(message = "Bairro não pode ser nulo")
+    private String neighborhood;
 
     @NotBlank(message = "País não pode ser em branco")
     @NotNull(message = "País não pode ser nulo")
